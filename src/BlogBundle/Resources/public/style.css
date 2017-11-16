@@ -1,0 +1,6 @@
+header, footer, #content {
+    text-align: center;
+    border: 1px solid black;
+    padding: 25px;
+    margin-bottom: 25px;
+}
