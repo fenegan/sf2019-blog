@@ -1,0 +1,28 @@
+{% extends 'BlogBundle::layout.html.twig' %}
+
+{% block content %}
+    <article>
+        <h2>{{ post.title }}</h2>
+        <div class="article-info">
+            Created {{ post.created|date('d/m/Y') }},
+            updated {{ post.updated|date('d/m/Y') }}
+            at {{ post.updated|date('H:i') }}
+        </div>
+        <hr>
+        <div class="article-content">
+            {{ post.content|nl2br }}
+        </div>
+        <hr>
+        <p>{{ post.comments.count }} comments</p>
+        {% for comment in post.comments %}
+        <div class="comment">
+            {{ comment.content|nl2br }}
+        </div>
+        {% endfor %}
+        <h3>Add comment</h3>
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <input type="submit"></input>
+        {{ form_end(form) }}
+    </article>
+{% endblock %}
