@@ -56,6 +56,31 @@ class DefaultController extends Controller
             ->getForm()
         ;
     }
+
+    /**
+     * @Route("/post/create", name="post_create")
+     */
+    public function createPostAction(Request $request)
+    {
+        $post = new Post();
+        $post->setTitle('Default Title');
+        $form = $this->createForm(PostType::class, $post);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($post);
+            $em->flush();
+            
+            return $this->redirectToRoute('home');
+        }
+        
+        return $this->render('BlogBundle:Post:create.html.twig',
+            ['form' => $form->createView()]
+        );
+    }
     
     /**
      * @Route("/post/{id}", name="post_view")
@@ -91,31 +116,6 @@ class DefaultController extends Controller
                 'commentDeleters' => $commentDeleters,
                 'form' => $form->createView()
             ]
-        );
-    }
-
-    /**
-     * @Route("/post/create", name="post_create")
-     */
-    public function createPostAction(Request $request)
-    {
-        $post = new Post();
-        $post->setTitle('Default Title');
-        $form = $this->createForm(PostType::class, $post);
-        
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($post);
-            $em->flush();
-            
-            return $this->redirectToRoute('home');
-        }
-        
-        return $this->render('BlogBundle:Post:create.html.twig',
-            ['form' => $form->createView()]
         );
     }
 }
