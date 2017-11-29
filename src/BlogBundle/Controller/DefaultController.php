@@ -4,7 +4,9 @@ namespace BlogBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use BlogBundle\Entity\Post;
 use BlogBundle\Form\PostType;
@@ -27,6 +29,35 @@ class DefaultController extends Controller
     }
     
     /**
+     * @Route("/delete-comment/{id}", name="delete_comment")
+     * @Method({"DELETE"})
+     */
+    public function deleteComment(Request $request, Comment $comment)
+    {
+        $form = $this->createDeleteForm($comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($comment);
+            $em->flush();
+        }
+        
+        $referer = $request->headers->get('referer');
+        return new RedirectResponse($referer);
+    }
+    
+    private function createDeleteForm(Comment $comment)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('delete_comment', array('id' => $comment->getId())))
+            ->setMethod('DELETE')
+            ->getForm()
+        ;
+    }
+    
+    /**
      * @Route("/post/{id}", name="post_view")
      */
     public function postViewAction(Request $request, Post $post)
@@ -45,9 +76,19 @@ class DefaultController extends Controller
             
             return $this->redirectToRoute('post_view', ['id' => $post->getId()]);
         }
+        
+        $commentDeleters = [];
+        
+        foreach ($post->getComments() as $comment)
+        {
+            $commentDeleters[$comment->getId()] =
+                $this->createDeleteForm($comment)->createView();
+        }
+        
         return $this->render('BlogBundle:Post:view.html.twig',
             [
                 'post' => $post,
+                'commentDeleters' => $commentDeleters,
                 'form' => $form->createView()
             ]
         );

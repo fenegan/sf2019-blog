@@ -17,12 +17,16 @@
         {% for comment in post.comments %}
         <div class="comment">
             {{ comment.content|nl2br }}
+            - {{ form_start(commentDeleters[comment.id]) }}
+              {{ form_widget(commentDeleters[comment.id]) }}
+              <input type="submit" value="Supprimer" class="btn btn-danger">
+              {{ form_end(commentDeleters[comment.id]) }}
         </div>
         {% endfor %}
         <h3>Add comment</h3>
         {{ form_start(form) }}
             {{ form_widget(form) }}
-            <input type="submit"></input>
+            <input type="submit" class="btn btn-primary"></input>
         {{ form_end(form) }}
     </article>
 {% endblock %}

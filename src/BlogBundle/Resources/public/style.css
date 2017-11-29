@@ -18,3 +18,7 @@ article:not(:last-of-type) {
 article textarea {
     background-color: black;
 }
+
+.comment form {
+    display: inline-block;
+}
